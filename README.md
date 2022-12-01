@@ -1,4 +1,4 @@
-# Advent of Code 2022 ☃️
+# Advent of Code 2022 🎅
 
 [![AoC](https://img.shields.io/badge/Advent%20of%20Code-2022-brightgreen?style=for-the-badge)](https://adventofcode.com/2022)
 [![Language](https://img.shields.io/badge/Language-Kotlin-ff69b4?style=for-the-badge)](https://kotlinlang.org/)
