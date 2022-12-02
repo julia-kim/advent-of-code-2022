@@ -1,3 +1,7 @@
+package days
+
+import readInput
+
 fun main() {
     fun mapElvesToCaloriesCounted(input: List<String>): HashMap<Int, Int> {
         var i = 1
