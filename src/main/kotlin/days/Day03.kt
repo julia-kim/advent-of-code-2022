@@ -2,16 +2,13 @@ package days
 
 import readInput
 
+private val lettersToNumber = (('a'..'z') + ('A'..'Z')).mapIndexed { i, c ->
+    c to (i + 1)
+}.toMap()
+
 fun main() {
     fun part1(input: List<String>): Int {
         var sum = 0
-        val lettersToNumber: MutableMap<Char, Int> = mutableMapOf()
-        ('a'..'z').forEachIndexed { i, c ->
-            lettersToNumber[c] = i + 1
-        }
-        ('A'..'Z').forEachIndexed { i, c ->
-            lettersToNumber[c] = i + 27
-        }
         input.forEach { rucksack ->
             val halfLength = rucksack.length / 2
             val compartment1 = rucksack.take(halfLength).map { it }
@@ -23,7 +20,15 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        return 0
+        var sum = 0
+        val allRucksacks = input.map { it.map { it } }
+        allRucksacks.chunked(3).forEach { group ->
+            val common = group[0].first { itemType ->
+                group[1].contains(itemType) && group[2].contains(itemType)
+            }
+            sum += lettersToNumber[common] ?: 0
+        }
+        return sum
     }
 
     val testInput = readInput("Day03_test")
