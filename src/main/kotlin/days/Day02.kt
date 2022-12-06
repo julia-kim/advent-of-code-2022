@@ -30,6 +30,15 @@ fun main() {
         return totalScore
     }
 
+    fun String.toShapeScore(): Int {
+        return when (this) {
+            "A" -> 1
+            "B" -> 2
+            "C" -> 3
+            else -> 0
+        }
+    }
+
     fun part2(input: List<String>): Int {
         var totalScore = 0
         // even is win, odd is loss
@@ -37,28 +46,21 @@ fun main() {
         val myMoves = input.map { strategy ->
             val (opponentsMove, outcome) = strategy.split(" ")
             when (outcome) { // X means lose, Y means draw, and Z means win
-                "X" -> moves.last { it.take(1) == opponentsMove }.takeLast(1)
+                "X" -> moves.last { it.take(1) == opponentsMove }.takeLast(1).toShapeScore()
                 "Y" -> {
                     totalScore += 3
-                    opponentsMove
+                    opponentsMove.toShapeScore()
                 }
 
                 "Z" -> {
                     totalScore += 6
-                    moves.first { it.take(1) == opponentsMove }.takeLast(1)
+                    moves.first { it.take(1) == opponentsMove }.takeLast(1).toShapeScore()
                 }
 
-                else -> ""
-            }
-        }
-        myMoves.forEach {
-            totalScore += when (it) {
-                "A" -> 1
-                "B" -> 2
-                "C" -> 3
                 else -> 0
             }
         }
+        totalScore += myMoves.sum()
         return totalScore
     }
 
