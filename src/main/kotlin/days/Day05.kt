@@ -12,45 +12,55 @@ fun main() {
         input.subList(0, blankLineIndex - 1).reversed().forEach {
             it.forEachIndexed { i, c ->
                 if (c.isLetter()) {
-                    if (stacks[stacksIndices[i]].isNullOrEmpty()) stacks[stacksIndices[i]] =
-                        mutableListOf(c) else stacks[stacksIndices[i]]!!.add(c)
+                    val matchingIndex = stacksIndices[i]
+                    if (stacks[matchingIndex].isNullOrEmpty()) stacks[matchingIndex] =
+                        mutableListOf(c) else stacks[matchingIndex]!!.add(c)
                 }
             }
         }
         return stacks
     }
 
-    fun parseInstructions() {}
+    fun parseInstructions(input: List<String>): List<Triple<Int, Int, Int>> {
+        val blankLineIndex = input.indexOfFirst { it.isBlank() }
+        val rearrangementProcedure = input.subList(blankLineIndex + 1, input.size)
+        return rearrangementProcedure.map {
+            val (qty, from, to) = it.split(" ").mapNotNull {
+                if (it.toIntOrNull() != null) it.toInt() else
+                    null
+            }
+            Triple(qty, from, to)
+        }
+
+    }
 
     fun part1(input: List<String>): String {
-        val blankLineIndex = input.indexOfFirst { it.isBlank() }
-        val stacks = makeStacks(input)
         var message = ""
-        val rearrangementProcedure = input.subList(blankLineIndex + 1, input.size)
-        rearrangementProcedure.forEach {
-            var (qty, from, to) = it.split(" ").mapNotNull { if (it.toIntOrNull() != null) it.toInt() else null }
+        val stacks = makeStacks(input)
+        val instructions = parseInstructions(input)
+        instructions.forEach {
+            var (qty, from, to) = it
             while (qty > 0) {
                 val crate = stacks[from]!!.removeLast()
                 stacks[to]!!.add(crate)
                 qty--
             }
         }
-        stacks.forEach { message += it.value.removeLast() }
+        stacks.forEach { message += it.value.last() }
         return message
     }
 
     fun part2(input: List<String>): String {
-        val blankLineIndex = input.indexOfFirst { it.isBlank() }
+        val message: String
         val stacks = makeStacks(input)
-        var message = ""
-        val rearrangementProcedure = input.subList(blankLineIndex + 1, input.size)
-        rearrangementProcedure.forEach {
-            val (qty, from, to) = it.split(" ").mapNotNull { if (it.toIntOrNull() != null) it.toInt() else null }
+        val instructions = parseInstructions(input)
+        instructions.forEach {
+            val (qty, from, to) = it
             val crates = stacks[from]!!.takeLast(qty)
             stacks[from] = stacks[from]!!.dropLast(qty).toMutableList()
             stacks[to]!!.addAll(crates)
         }
-        stacks.forEach { message += it.value.last() }
+        message = stacks.values.joinToString(separator = "") { it.last().toString() }
         return message
     }
 
