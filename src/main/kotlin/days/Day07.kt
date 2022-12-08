@@ -3,45 +3,75 @@ package days
 import readInput
 
 fun main() {
+    tailrec fun getAllChildren(
+        filesystem: MutableList<Directory>,
+        parent: String,
+        list: MutableSet<String>
+    ): MutableSet<String> {
+        val d = filesystem.first { it.name == parent }
+        list.add(d.name)
+        d.childrenDirectories.forEach {
+            list.addAll(d.childrenDirectories)
+            return getAllChildren(filesystem, it, list)
+        }
+        return list
+    }
+
+
     fun part1(input: List<String>): Long {
-        val filesystem: MutableMap<String, MutableSet<String>> = mutableMapOf()
-        val allDirectories: MutableMap<String, Directory> = mutableMapOf()
-        var currentDirectory: String = ""
-        var totalSize = 0L
+        val filesystem: MutableList<Directory> = mutableListOf()
+        var currentDirectory = ""
         input.forEach {
             when {
                 it.startsWith("$ ls") -> return@forEach
-
                 it.startsWith("$ cd") -> {
                     val dir = it.split(" ").last()
-                    if (dir == "/" && allDirectories["/"] == null) allDirectories["/"] =
-                        Directory("/", parentDirectory = "/", isHomeDirectory = true)
-                    currentDirectory = if (dir == "..") allDirectories[currentDirectory]!!.parentDirectory else dir
+                    if (dir == "/" && filesystem.firstOrNull() == null) filesystem.add(
+                        Directory(
+                            "/",
+                            parentDirectory = "/",
+                            isHomeDirectory = true
+                        )
+                    )
+                    val i = filesystem.indexOfFirst { it.name == currentDirectory }
+                    currentDirectory = if (dir == "..") filesystem[i].parentDirectory else dir
                 }
 
                 it.startsWith("dir") -> {
                     val directoryName = it.split(" ").last()
-                    if (filesystem[currentDirectory] == null) {
-                        filesystem[currentDirectory] = mutableSetOf(directoryName)
+                    val current = filesystem.first { it.name == currentDirectory }
+                    current.childrenDirectories.add(directoryName)
+                    val i = filesystem.indexOfFirst { it.name == directoryName }
+                    if (i == -1) {
+                        filesystem.add(Directory(directoryName, parentDirectory = currentDirectory))
                     } else {
-                        filesystem[currentDirectory]!!.add(directoryName)
-                    }
-
-                    if (allDirectories[directoryName] == null) {
-                        allDirectories[directoryName] = Directory(directoryName, parentDirectory = currentDirectory)
+                        filesystem[i]
                     }
                 }
 
                 else -> {
-                    val dir = allDirectories[currentDirectory]!!
+                    val i = filesystem.indexOfFirst { it.name == currentDirectory }
+                    val dir = filesystem[i]
                     val (size, name) = it.split(" ")
                     dir.files.add(File(name, size.toLong()))
                 }
             }
         }
-        allDirectories.forEach { it.value.folderSize = it.value.files.sumOf { it.size } }
-        allDirectories.filter { it.value.folderSize <= 100000 }
-        return totalSize
+        filesystem.forEach { d ->
+            val allChildren = getAllChildren(filesystem, d.name!!, mutableSetOf())
+            println(allChildren)
+            d.totalSize += allChildren.sumOf { child ->
+                filesystem.first {
+                    it.name ==
+                            child
+                }
+                    .files.sumOf {
+                        it.size
+                    }
+            }
+        }
+       println(filesystem)
+        return filesystem.filter { it.totalSize < 100000 }.sumOf { it.totalSize }
     }
 
     fun part2(input: List<String>): Int {
@@ -59,9 +89,10 @@ fun main() {
 
 data class File(var name: String? = null, var size: Long = 0)
 data class Directory(
-    var name: String? = null,
+    var name: String = "",
     var files: MutableList<File> = mutableListOf(),
     var parentDirectory: String = "",
+    var childrenDirectories: MutableList<String> = mutableListOf(),
     var isHomeDirectory: Boolean = false,
-    var folderSize: Long = 0
+    var totalSize: Long = 0L
 )
