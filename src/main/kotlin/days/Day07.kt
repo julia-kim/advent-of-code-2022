@@ -3,18 +3,21 @@ package days
 import readInput
 
 fun main() {
-    tailrec fun getAllChildren(
+    tailrec fun sumFiles(
         filesystem: MutableList<Directory>,
-        parent: String,
-        list: MutableSet<String>
-    ): MutableSet<String> {
-        val d = filesystem.first { it.name == parent }
-        list.add(d.name)
-        d.childrenDirectories.forEach {
-            list.addAll(d.childrenDirectories)
-            return getAllChildren(filesystem, it, list)
+        children: List<String>,
+        sum: Long
+    ): Long {
+        var total = sum
+        if (children.isEmpty()) return total
+        val dirs = children.map { child ->
+            filesystem.first { it.name == child }
         }
-        return list
+        dirs.forEach { dir ->
+            total += dir.files.sumOf { it.size }
+            sumFiles(filesystem, dir.childrenDirectories, total)
+        }
+        return total
     }
 
 
@@ -58,20 +61,13 @@ fun main() {
             }
         }
         filesystem.forEach { d ->
-            val allChildren = getAllChildren(filesystem, d.name!!, mutableSetOf())
-            println(allChildren)
-            d.totalSize += allChildren.sumOf { child ->
-                filesystem.first {
-                    it.name ==
-                            child
-                }
-                    .files.sumOf {
-                        it.size
-                    }
-            }
+            d.totalSize = sumFiles(
+                filesystem,
+                d.childrenDirectories,
+                d.files.sumOf { it.size })
         }
-       println(filesystem)
-        return filesystem.filter { it.totalSize < 100000 }.sumOf { it.totalSize }
+        println(filesystem)
+        return filesystem.filter { it.totalSize <= 100000 }.sumOf { it.totalSize }
     }
 
     fun part2(input: List<String>): Int {
