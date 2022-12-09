@@ -44,20 +44,18 @@ fun main() {
         var scenicScore: MutableList<Int> = mutableListOf()
         array.forEachIndexed { i, row ->
             row.forEachIndexed { j, height ->
-
-                val right = row.take(j).reversed().takeIf { it.isNotEmpty() }
-                val r = right?.indexOfFirst { it >= height }?.let { right.take(it)?.size ?: 0 }
-                val left = row.takeLast(rows - j - 1).takeIf { it.isNotEmpty() }
-                val l = left?.takeWhile { it < height }?.size ?: 0
+                val left = row.take(j).reversed().takeIf { it.isNotEmpty() }
+                val l = left?.indexOfFirst { it >= height }?.let { if (it == -1) left.size else it+1 } ?: 0
+                val right = row.takeLast(rows - j - 1).takeIf { it.isNotEmpty() }
+                val r = right?.indexOfFirst { it >= height }?.let { if (it == -1) right.size else it+1 }?: 0
                 val top = columns[j].take(i).reversed().takeIf { it.isNotEmpty() }
-                val t = top?.takeWhile { it < height }?.size ?: 0
+                val t = top?.indexOfFirst { it >= height }?.let { if (it == -1) top.size else it+1 } ?: 0
                 val bottom = columns[j].takeLast(cols - i - 1).takeIf { it.isNotEmpty() }
-                val b = bottom?.takeWhile { it < height }?.size ?: 0
+                val b = bottom?.indexOfFirst { it >= height }?.let { if (it == -1) bottom.size else it+1 }?: 0
                 val score = r * l * t * b
                 scenicScore.add(score)
             }
         }
-        println(scenicScore)
         return scenicScore.max()
     }
 
