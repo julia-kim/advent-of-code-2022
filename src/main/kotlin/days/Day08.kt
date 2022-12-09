@@ -17,10 +17,10 @@ fun main() {
         array.forEachIndexed { i, row ->
             row.forEachIndexed { j, height ->
                 var visible = false
-                val right = row.take(j)
-                if (right.all { it < height }) visible = true
-                val left = row.takeLast(cols - j - 1)
+                val left = row.take(j)
                 if (left.all { it < height }) visible = true
+                val right = row.takeLast(cols - j - 1)
+                if (right.all { it < height }) visible = true
                 val top = columns[j].take(i)
                 if (top.all { it < height }) visible = true
                 val bottom = columns[j].takeLast(rows - i - 1)
