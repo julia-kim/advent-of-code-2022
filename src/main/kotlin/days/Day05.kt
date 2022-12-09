@@ -31,7 +31,6 @@ fun main() {
             }
             Triple(qty, from, to)
         }
-
     }
 
     fun part1(input: List<String>): String {

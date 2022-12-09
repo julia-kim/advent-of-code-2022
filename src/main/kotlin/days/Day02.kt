@@ -25,7 +25,6 @@ fun main() {
                 "Z" -> 3
                 else -> 0
             }
-
         }
         return totalScore
     }

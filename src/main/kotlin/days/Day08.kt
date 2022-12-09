@@ -2,7 +2,6 @@ package days
 
 import readInput
 
-
 fun main() {
     fun createTreeGrid(input: List<String>) = input.map {
         it.map(Character::getNumericValue).toIntArray()
