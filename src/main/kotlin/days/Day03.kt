@@ -2,11 +2,11 @@ package days
 
 import readInput
 
-private val lettersToNumber = (('a'..'z') + ('A'..'Z')).mapIndexed { i, c ->
-    c to (i + 1)
-}.toMap()
-
 fun main() {
+    val lettersToNumber = (('a'..'z') + ('A'..'Z')).mapIndexed { i, c ->
+        c to (i + 1)
+    }.toMap()
+
     fun part1(input: List<String>): Int {
         var sum = 0
         input.forEach { rucksack ->
