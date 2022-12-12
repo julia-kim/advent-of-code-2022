@@ -22,25 +22,50 @@ fun main() {
             listOf(20, 60, 100, 140, 180, 220).forEach { i ->
                 if (cycleNumber == i) signalStrengths.add(i * currentX)
                 if (cycleNumber > i && !signals.contains(i)) {
-                    println("$cycleNumber $currentX")
                     signals[i] = currentX
                     signalStrengths.add(i * currentX)
                 }
             }
         }
-        println(signals)
         return signalStrengths.sum()
     }
 
-    fun part2(input: List<String>): Int {
-        return 0
+    fun part2(input: List<String>) {
+        var x = 1
+        val iterator = input.iterator()
+        var rows = 0
+        var addV = false
+        var op = iterator.next()
+        while (rows < 6) {
+            var cols = 0
+            while (cols < 40) {
+                if (cols in (x - 1..x + 1))
+                    print("#") else print(".")
+                if (op == "noop") {
+                    op = if (iterator.hasNext()) iterator.next() else return
+                    cols++
+                } else {
+                    if (!addV) {
+                        addV = true
+                    } else {
+                        x += op.removePrefix("addx ").toInt()
+                        addV = false
+                        op = if (iterator.hasNext()) iterator.next() else return
+                    }
+                    cols++
+                }
+            }
+            println()
+            rows++
+        }
     }
 
     val testInput = readInput("Day10_test")
     check(part1(testInput) == 13140)
-    check(part2(testInput) == 0)
+    part2(testInput)
+    println()
 
     val input = readInput("Day10")
     println(part1(input))
-    println(part2(input))
+    part2(input)
 }
