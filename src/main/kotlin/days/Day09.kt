@@ -91,7 +91,6 @@ fun main() {
                 steps--
             }
         }
-        println(visitedPoints.distinctBy { it.x to it.y })
         return visitedPoints.distinctBy { it.x to it.y }.size
     }
 
@@ -121,35 +120,35 @@ fun main() {
                 tail1.x = newTail1.x
                 tail1.y = newTail1.y
 
-                val newTail2 = moveTail(tail1.copy().x, tail1.copy().y, tail2.copy())
+                val newTail2 = moveTail(newTail1.x, newTail1.y, tail2.copy())
                 tail2.x = newTail2.x
                 tail2.y = newTail2.y
 
-                val newTail3 = moveTail(tail2.copy().x, tail2.copy().y, tail3.copy())
+                val newTail3 = moveTail(newTail2.x, newTail2.y, tail3.copy())
                 tail3.x = newTail3.x
                 tail3.y = newTail3.y
 
-                val newTail4 = moveTail(tail3.copy().x, tail3.copy().y, tail4.copy())
+                val newTail4 = moveTail(newTail3.x, newTail3.y, tail4.copy())
                 tail4.x = newTail4.x
                 tail4.y = newTail4.y
 
-                val newTail5 = moveTail(tail4.copy().x, tail4.copy().y, tail5.copy())
+                val newTail5 = moveTail(newTail4.x, newTail4.y, tail5.copy())
                 tail5.x = newTail5.x
                 tail5.y = newTail5.y
 
-                val newTail6 = moveTail(tail5.copy().x, tail5.copy().y, tail6.copy())
+                val newTail6 = moveTail(newTail5.x, newTail5.y, tail6.copy())
                 tail6.x = newTail6.x
                 tail6.y = newTail6.y
 
-                val newTail7 = moveTail(tail6.copy().x, tail6.copy().y, tail7.copy())
+                val newTail7 = moveTail(newTail6.x, newTail6.y, tail7.copy())
                 tail7.x = newTail7.x
                 tail7.y = newTail7.y
 
-                val newTail8 = moveTail(tail7.copy().x, tail7.copy().y, tail8.copy())
+                val newTail8 = moveTail(newTail7.x, newTail7.y, tail8.copy())
                 tail8.x = newTail8.x
                 tail8.y = newTail8.y
 
-                val newTail9 = moveTail(tail8.copy().x, tail8.copy().y, tail9.copy())
+                val newTail9 = moveTail(newTail8.x, newTail8.y, tail9.copy())
                 tail9.x = newTail9.x
                 tail9.y = newTail9.y
 
@@ -157,13 +156,28 @@ fun main() {
                 steps--
             }
         }
+        println(visitedPoints.size)
         val visited = visitedPoints.distinctBy { it.x to it.y }
+        var rows = visited.minOf { it.y }
+        while (rows <= visited.maxOf { it.y }) {
+            var cols = visited.minOf { it.x }
+            while (cols <= visited.maxOf { it.x }) {
+                if (visited.contains(Point(cols, rows))) {
+                    if (rows == 0 && cols == 0) {
+                        print("s")
+                    } else print("#")
+                } else print(".")
+                cols++
+            }
+            println()
+            rows++
+        }
         return visited.size
     }
 
     val testInput = readInput("Day09_test")
-    check(part1(testInput) == 13)
-    check(part2(testInput) == 1)
+    check(part1(testInput) == 88)
+    check(part2(testInput) == 36)
 
     val input = readInput("Day09")
     println(part1(input))
