@@ -4,6 +4,22 @@ import readInput
 import kotlin.math.absoluteValue
 
 fun main() {
+    fun printTail(visited: List<Point>) {
+        var rows = visited.maxOf { it.y }
+        while (rows >= visited.minOf { it.y }) {
+            var cols = visited.minOf { it.x }
+            while (cols <= visited.maxOf { it.x }) {
+                if (visited.contains(Point(cols, rows))) {
+                    if (rows == 0 && cols == 0) {
+                        print("s")
+                    } else print("#")
+                } else print(".")
+                cols++
+            }
+            println()
+            rows--
+        }
+    }
     fun moveTail(x: Int, y: Int, tail: Point): Point {
         val xDifference = x - tail.x
         val yDifference = y - tail.y
@@ -158,20 +174,7 @@ fun main() {
         }
         println(visitedPoints.size)
         val visited = visitedPoints.distinctBy { it.x to it.y }
-        var rows = visited.minOf { it.y }
-        while (rows <= visited.maxOf { it.y }) {
-            var cols = visited.minOf { it.x }
-            while (cols <= visited.maxOf { it.x }) {
-                if (visited.contains(Point(cols, rows))) {
-                    if (rows == 0 && cols == 0) {
-                        print("s")
-                    } else print("#")
-                } else print(".")
-                cols++
-            }
-            println()
-            rows++
-        }
+        printTail(visited)
         return visited.size
     }
 
