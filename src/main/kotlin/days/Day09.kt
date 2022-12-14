@@ -1,5 +1,6 @@
 package days
 
+import Point
 import readInput
 import kotlin.math.absoluteValue
 
@@ -20,70 +21,49 @@ fun main() {
             rows--
         }
     }
+
     fun moveTail(x: Int, y: Int, tail: Point): Point {
-        val xDifference = x - tail.x
-        val yDifference = y - tail.y
-        if (xDifference.absoluteValue <= 1 && yDifference.absoluteValue <= 1) return tail
-        var newX = tail.x
-        var newY = tail.y
+        val dx = (x - tail.x)
+        val dy = (y - tail.y)
+        if (dx.absoluteValue <= 1 && dy.absoluteValue <= 1) return tail
         when {
-            (xDifference == 2 && yDifference == 1) -> {
-                newX += 1
-                newY += 1
+            (dx == 2 && dy >= 1) || (dx >= 1 && dy == 2) -> {
+                tail.x += 1
+                tail.y += 1
             }
 
-            (xDifference == 2 && yDifference == -1) -> {
-                newX += 1
-                newY -= 1
+            (dx == 2 && dy <= -1) || (dx >= 1 && dy == -2) -> {
+                tail.x += 1
+                tail.y -= 1
             }
 
-            (xDifference == -2 && yDifference == -1) -> {
-                newX -= 1
-                newY -= 1
+            (dx == -2 && dy <= -1) || (dx <= -1 && dy == -2) -> {
+                tail.x -= 1
+                tail.y -= 1
             }
 
-            (xDifference == -2 && yDifference == 1) -> {
-                newX -= 1
-                newY += 1
+            (dx == -2 && dy >= 1) || (dx <= -1 && dy == 2) -> {
+                tail.x -= 1
+                tail.y += 1
             }
 
-            (xDifference == 1 && yDifference == 2) -> {
-                newX += 1
-                newY += 1
+            (dx == -2) -> {
+                tail.x -= 1
             }
 
-            (xDifference == 1 && yDifference == -2) -> {
-                newX += 1
-                newY -= 1
+            (dx == 2) -> {
+                tail.x += 1
             }
 
-            (xDifference == -1 && yDifference == -2) -> {
-                newX -= 1
-                newY -= 1
+            (dy == 2) -> {
+                tail.y += 1
             }
 
-            (xDifference == -1 && yDifference == 2) -> {
-                newX -= 1
-                newY += 1
-            }
-
-            (xDifference == -2) -> {
-                newX -= 1
-            }
-
-            (xDifference == 2) -> {
-                newX += 1
-            }
-
-            (yDifference == 2) -> {
-                newY += 1
-            }
-
-            (yDifference == -2) -> {
-                newY -= 1
+            (dy == -2) -> {
+                tail.y -= 1
             }
         }
-        return Point(newX, newY)
+        return Point(tail.x, tail.y)
     }
 
     fun part1(input: List<String>): Int {
@@ -111,68 +91,26 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        val head = Point(0, 0)
-        val tail1 = Point(0, 0)
-        val tail2 = Point(0, 0)
-        val tail3 = Point(0, 0)
-        val tail4 = Point(0, 0)
-        val tail5 = Point(0, 0)
-        val tail6 = Point(0, 0)
-        val tail7 = Point(0, 0)
-        val tail8 = Point(0, 0)
-        val tail9 = Point(0, 0)
-        val visitedPoints: MutableList<Point> = mutableListOf(tail9)
+        val rope = (0 until 10).map { Point(0, 0) }.toMutableList()
+        val visitedPoints = mutableListOf(rope[9])
         input.forEach {
             val direction = it.take(1)
             var steps = it.split(" ").last().toInt()
             while (steps > 0) {
                 when (direction) {
-                    "R" -> head.x += 1
-                    "L" -> head.x -= 1
-                    "U" -> head.y += 1
-                    "D" -> head.y -= 1
+                    "R" -> rope[0].x += 1
+                    "L" -> rope[0].x -= 1
+                    "U" -> rope[0].y += 1
+                    "D" -> rope[0].y -= 1
                 }
-                val newTail1 = moveTail(head.x, head.y, tail1.copy())
-                tail1.x = newTail1.x
-                tail1.y = newTail1.y
-
-                val newTail2 = moveTail(newTail1.x, newTail1.y, tail2.copy())
-                tail2.x = newTail2.x
-                tail2.y = newTail2.y
-
-                val newTail3 = moveTail(newTail2.x, newTail2.y, tail3.copy())
-                tail3.x = newTail3.x
-                tail3.y = newTail3.y
-
-                val newTail4 = moveTail(newTail3.x, newTail3.y, tail4.copy())
-                tail4.x = newTail4.x
-                tail4.y = newTail4.y
-
-                val newTail5 = moveTail(newTail4.x, newTail4.y, tail5.copy())
-                tail5.x = newTail5.x
-                tail5.y = newTail5.y
-
-                val newTail6 = moveTail(newTail5.x, newTail5.y, tail6.copy())
-                tail6.x = newTail6.x
-                tail6.y = newTail6.y
-
-                val newTail7 = moveTail(newTail6.x, newTail6.y, tail7.copy())
-                tail7.x = newTail7.x
-                tail7.y = newTail7.y
-
-                val newTail8 = moveTail(newTail7.x, newTail7.y, tail8.copy())
-                tail8.x = newTail8.x
-                tail8.y = newTail8.y
-
-                val newTail9 = moveTail(newTail8.x, newTail8.y, tail9.copy())
-                tail9.x = newTail9.x
-                tail9.y = newTail9.y
-
-                visitedPoints.add(newTail9)
+                (1..9).forEach { i ->
+                    val tail = moveTail(rope[i - 1].x, rope[i - 1].y, rope[i].copy())
+                    rope[i] = tail
+                }
+                visitedPoints.add(rope[9])
                 steps--
             }
         }
-        println(visitedPoints.size)
         val visited = visitedPoints.distinctBy { it.x to it.y }
         printTail(visited)
         return visited.size
@@ -186,5 +124,3 @@ fun main() {
     println(part1(input))
     println(part2(input))
 }
-
-data class Point(var x: Int, var y: Int)
