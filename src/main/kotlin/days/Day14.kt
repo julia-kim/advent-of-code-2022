@@ -4,16 +4,17 @@ import Point
 import readInput
 
 fun main() {
-    fun printCave(visited: List<Point>) {
+    fun printCave(visited: List<Point>, sand: List<Point>) {
         var rows = visited.minOf { it.y }
         while (rows <= visited.maxOf { it.y }) {
             var cols = visited.minOf { it.x }
             while (cols <= visited.maxOf { it.x }) {
-                if (visited.contains(Point(cols, rows))) {
-                    if (rows == 500 && cols == 0) {
-                        print("+")
-                    } else print("#")
-                } else print(".")
+                when {
+                    (rows == 500 && cols == 0) -> print("+")
+                    (sand.contains(Point(cols, rows))) -> print("o")
+                    (visited.contains(Point(cols, rows))) -> print("#")
+                    else -> print(".")
+                }
                 cols++
             }
             println()
@@ -21,27 +22,25 @@ fun main() {
         }
     }
 
-    fun fallingSand(sand: Point, cave: MutableList<Point>, caveBottom: Int): Boolean {
+    fun fallingSand(sand: Point, cave: List<Point>, restingSand: MutableList<Point>): Boolean {
         val oneBelow = Point(sand.x, sand.y + 1)
         val leftBelow = Point(sand.x - 1, sand.y + 1)
         val rightBelow = Point(sand.x + 1, sand.y + 1)
-        println(listOf(oneBelow, leftBelow, rightBelow))
         when {
-            sand.y == caveBottom -> {
-                cave.add(sand)
-                return true
-            }
+            !cave.contains(oneBelow) && !restingSand.contains(oneBelow) ->
+                fallingSand(oneBelow, cave, restingSand)
 
-            !cave.contains(oneBelow) -> fallingSand(oneBelow, cave, caveBottom)
-            !cave.contains(leftBelow) -> fallingSand(leftBelow, cave, caveBottom)
-            !cave.contains(rightBelow) -> fallingSand(rightBelow, cave, caveBottom)
-            else -> {
-                cave.add(sand)
-                return true
-            }
+            !cave.contains(leftBelow) && !restingSand.contains(leftBelow) ->
+                fallingSand(leftBelow, cave, restingSand)
+
+            !cave.contains(rightBelow) && !restingSand.contains(rightBelow) ->
+                fallingSand(rightBelow, cave, restingSand)
+
+            else -> restingSand.add(sand)
         }
-        return false
+        return true
     }
+
 
     fun part1(input: List<String>): Long {
         var sandCount = 0L
@@ -69,14 +68,13 @@ fun main() {
                 }
             }
         }
-        val caveBottom = cave.maxOf { it.y }
         val restingSand = mutableListOf<Point>()
-        var abyss = false
-        while (sandCount < 26) {
+        while (sandCount < Int.MAX_VALUE) {
             val sand = Point(500, 0)
-            if (fallingSand(sand, cave, caveBottom)) sandCount++
+            if (fallingSand(sand, cave, restingSand)) sandCount++
+            println(sandCount)
         }
-        printCave(cave.distinctBy { it.x to it.y })
+        printCave(cave.distinctBy { it.x to it.y }, restingSand.distinctBy { it.x to it.y })
         return sandCount
     }
 
@@ -86,7 +84,7 @@ fun main() {
     }
 
     val testInput = readInput("Day14_test")
-    check(part1(testInput) == 0L)
+    //  check(part1(testInput) == 0L)
     check(part2(testInput) == 0)
 
     val input = readInput("Day14")
