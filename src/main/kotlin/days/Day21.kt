@@ -4,6 +4,16 @@ import readInput
 import kotlin.math.absoluteValue
 
 fun main() {
+    fun evaluateExpression(val1: Long, val2: Long, op: Char): Long {
+        return when (op) {
+            '+' -> val1 + val2
+            '-' -> val1 - val2
+            '*' -> val1 * val2
+            '/' -> val1 / val2
+            else -> throw IllegalStateException()
+        }
+    }
+
     fun part1(input: List<String>): Long {
         val monkeyNumbers = mutableMapOf<String, Long>()
         val monkeyOperations = mutableMapOf<String, String>()
@@ -20,15 +30,8 @@ fun main() {
                     val monkey2 = job.takeLast(4)
                     val mathOperator = job[5]
                     if (monkeyNumbers.containsKey(monkey1) && monkeyNumbers.containsKey(monkey2)) {
-                        monkeyNumbers[name] = when (mathOperator) {
-                            '+' -> monkeyNumbers[monkey1]!! + monkeyNumbers[monkey2]!!
-                            '-' -> monkeyNumbers[monkey1]!! - monkeyNumbers[monkey2]!!
-                            '*' -> monkeyNumbers[monkey1]!! * monkeyNumbers[monkey2]!!
-                            '/' -> monkeyNumbers[monkey1]!! / monkeyNumbers[monkey2]!!
-                            else -> {
-                                throw IllegalStateException()
-                            }
-                        }
+                        monkeyNumbers[name] =
+                            evaluateExpression(monkeyNumbers[monkey1]!!, monkeyNumbers[monkey2]!!, mathOperator)
                     }
                 }
             }
@@ -47,7 +50,7 @@ fun main() {
         }
         val monkeyRoot = mutableListOf(monkeyOperations["root"]!!.take(4), monkeyOperations["root"]!!.takeLast(4))
         monkeyOperations.remove("root")
-        var magicNumber: Long = 0
+        var magicNumber = 0L
         while (magicNumber == 0L) {
             monkeyOperations.forEach {
                 val (name, job) = it
@@ -56,15 +59,8 @@ fun main() {
                     val monkey2 = job.takeLast(4)
                     val mathOperator = job[5]
                     if (monkeyNumbers.containsKey(monkey1) && monkeyNumbers.containsKey(monkey2)) {
-                        monkeyNumbers[name] = when (mathOperator) {
-                            '+' -> monkeyNumbers[monkey1]!! + monkeyNumbers[monkey2]!!
-                            '-' -> monkeyNumbers[monkey1]!! - monkeyNumbers[monkey2]!!
-                            '*' -> monkeyNumbers[monkey1]!! * monkeyNumbers[monkey2]!!
-                            '/' -> monkeyNumbers[monkey1]!! / monkeyNumbers[monkey2]!!
-                            else -> {
-                                throw IllegalStateException()
-                            }
-                        }
+                        monkeyNumbers[name] =
+                            evaluateExpression(monkeyNumbers[monkey1]!!, monkeyNumbers[monkey2]!!, mathOperator)
                         if (monkeyRoot.contains(name)) magicNumber = monkeyNumbers[name]!!
                         monkeyRoot.remove(name)
                     }
